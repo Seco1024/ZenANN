@@ -10,19 +10,23 @@ ALL_INCLUDES := $(PYBIND11_INCLUDES) $(PYTHON_INCLUDE) $(PROJECT_INCLUDE)
 ALL_LIBS := $(PYTHON_LIB)
 
 SOURCES := src/IndexBase.cpp python/zenann_pybind.cpp
-TARGET := zenann$(shell python3-config --extension-suffix)
+EXT_SUFFIX := $(shell python3-config --extension-suffix)
+TARGET := build/zenann$(EXT_SUFFIX)
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
     LDFLAGS := -undefined dynamic_lookup
 endif
 
-.PHONY: all clean
+.PHONY: all clean prepare
 
-all: $(TARGET)
+all: prepare $(TARGET)
+
+prepare:
+	mkdir -p build
 
 $(TARGET): $(SOURCES)
 	$(CXX) $(CXXFLAGS) $(ALL_INCLUDES) -shared -o $@ $(SOURCES) $(ALL_LIBS) $(LDFLAGS)
 
 clean:
-	rm -f $(TARGET)
+	rm -rf build
