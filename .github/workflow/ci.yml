@@ -1,0 +1,33 @@
+name: ZenANN CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install build tools
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y g++ python3-dev
+        pip install pybind11 pytest
+
+    - name: Build pybind11 module
+      run: make
+
+    - name: Run tests
+      run: |
+        pytest tests/
