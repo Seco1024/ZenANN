@@ -1,6 +1,7 @@
 import sys
 import unittest
 sys.path.append('..')
+sys.path.append("build") 
 
 from zenann import IndexBase
 
