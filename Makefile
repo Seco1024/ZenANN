@@ -9,7 +9,7 @@ PROJECT_INCLUDE := -I./include -I./include/zenann
 ALL_INCLUDES := $(PYBIND11_INCLUDES) $(PYTHON_INCLUDE) $(PROJECT_INCLUDE)
 ALL_LIBS := $(PYTHON_LIB)
 
-SOURCES := src/IndexBase.cpp src/IVFFlatIndex.cpp python/zenann_pybind.cpp
+SOURCES := src/IndexBase.cpp src/IVFFlatIndex.cpp src/KDTreeIndex.cpp python/zenann_pybind.cpp
 EXT_SUFFIX := $(shell python3-config --extension-suffix)
 TARGET := build/zenann$(EXT_SUFFIX)
 
