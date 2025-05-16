@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cmath>
 #include <iostream>
+#include <fstream>
 
 namespace zenann {
 
@@ -158,4 +159,76 @@ void IVFFlatIndex::kmeans(const Dataset& data, size_t iterations) {
     }
 }
 
+void IVFFlatIndex::write_index(const std::string& filename) const {
+    std::ofstream out(filename, std::ios::binary);
+    // Basic params
+    out.write(reinterpret_cast<const char*>(&dimension_), sizeof(dimension_));
+    out.write(reinterpret_cast<const char*>(&nlist_), sizeof(nlist_));
+    out.write(reinterpret_cast<const char*>(&nprobe_), sizeof(nprobe_));
+    
+    // Write raw data
+    const auto& data = datastore_->getAll();
+    size_t N = data.size();
+    out.write(reinterpret_cast<const char*>(&N), sizeof(N));
+    for (const auto& v : data) {
+        out.write(reinterpret_cast<const char*>(v.data()), sizeof(float)*v.size());
+    }
+    
+    // Write centroids
+    size_t C = centroids_.size();
+    out.write(reinterpret_cast<const char*>(&C), sizeof(C));
+    for (const auto& cvec : centroids_) {
+        out.write(reinterpret_cast<const char*>(cvec.data()), sizeof(float)*cvec.size());
+    }
+    
+    // Write inverted lists
+    size_t L = lists_.size();
+    out.write(reinterpret_cast<const char*>(&L), sizeof(L));
+    for (const auto& lst : lists_) {
+        size_t sz = lst.size();
+        out.write(reinterpret_cast<const char*>(&sz), sizeof(sz));
+        out.write(reinterpret_cast<const char*>(lst.data()), sizeof(size_t)*sz);
+    }
+}
+
+std::shared_ptr<IVFFlatIndex> IVFFlatIndex::read_index(const std::string& filename) {
+    std::ifstream in(filename, std::ios::binary);
+    // Read basic params
+    size_t dim, nlist, nprobe;
+    in.read(reinterpret_cast<char*>(&dim), sizeof(dim));
+    in.read(reinterpret_cast<char*>(&nlist), sizeof(nlist));
+    in.read(reinterpret_cast<char*>(&nprobe), sizeof(nprobe));
+
+    auto idx = std::make_shared<IVFFlatIndex>(dim, nlist, nprobe);
+    
+    // Read raw data
+    size_t N;
+    in.read(reinterpret_cast<char*>(&N), sizeof(N));
+    Dataset data(N, Vector(dim));
+    for (auto& v : data) {
+        in.read(reinterpret_cast<char*>(v.data()), sizeof(float)*dim);
+    }
+    idx->datastore_->add(data);
+    
+    // Read centroids
+    size_t C;
+    in.read(reinterpret_cast<char*>(&C), sizeof(C));
+    idx->centroids_.resize(C, Vector(dim));
+    for (auto& cvec : idx->centroids_) {
+        in.read(reinterpret_cast<char*>(cvec.data()), sizeof(float)*dim);
+    }
+    
+    // Read inverted lists
+    size_t L;
+    in.read(reinterpret_cast<char*>(&L), sizeof(L));
+    idx->lists_.resize(L);
+    for (auto& lst : idx->lists_) {
+        size_t sz;
+        in.read(reinterpret_cast<char*>(&sz), sizeof(sz));
+        lst.resize(sz);
+        in.read(reinterpret_cast<char*>(lst.data()), sizeof(size_t)*sz);
+    }
+    
+    return idx;
+}
 } 
