@@ -77,7 +77,7 @@ def main(args):
     t0 = time.time()
     all_results = index.search_batch(queries.tolist(), K)
     t_search = time.time() - t0
-    qps = len(queries[0]) / t_search
+    qps = len(queries) / t_search
 
     # collect indices into numpy array
     results = np.zeros((len(all_results), K), dtype=np.int64)
