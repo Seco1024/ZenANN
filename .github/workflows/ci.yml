@@ -26,7 +26,7 @@ jobs:
             libomp-dev \
             libgflags-dev \
             python3-dev
-        pip install pybind11 pytest
+        pip install pybind11 pytest numpy
 
     - name: Set up Python
       uses: actions/setup-python@v4
