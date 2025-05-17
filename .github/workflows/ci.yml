@@ -24,6 +24,7 @@ jobs:
             ninja-build \
             libopenblas-dev \
             libomp-dev \
+            libgflags-dev \
             python3-dev
         pip install pybind11 pytest
 
@@ -54,7 +55,7 @@ jobs:
         FAISS_LIB: extern/faiss/build/install/lib     
       run: |
         make
-        
+
     - name: Run unit-tests
       run: |
         pytest tests/
