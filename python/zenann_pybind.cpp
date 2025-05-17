@@ -4,6 +4,7 @@
 #include "IndexBase.h"
 #include "IVFFlatIndex.h"
 #include "KDTreeIndex.h"
+#include "HNSWIndex.h"
 
 namespace py = pybind11;
 using namespace zenann;
@@ -61,7 +62,6 @@ PYBIND11_MODULE(zenann, m) {
              &IVFFlatIndex::search_batch,
              py::const_),
          py::arg("queries"), py::arg("k"), py::arg("nprobe"))
-
     .def("write_index", &IVFFlatIndex::write_index, py::arg("filename"))
     .def_static("read_index", &IVFFlatIndex::read_index, py::arg("filename"));
 
@@ -77,4 +77,32 @@ PYBIND11_MODULE(zenann, m) {
              "Serialize KDTree index to file")
         .def_static("read_index", &KDTreeIndex::read_index, py::arg("filename"),
              "Load KDTree index from file");
+
+     py::class_<HNSWIndex, IndexBase, std::shared_ptr<HNSWIndex>>(m, "HNSWIndex")
+          .def(py::init<size_t,size_t,size_t>(),
+               py::arg("dim"), py::arg("M"), py::arg("efConstruction")=200)
+          .def("build", &HNSWIndex::build, py::arg("data"))
+          .def("train", &HNSWIndex::train)
+          .def("search", (SearchResult (HNSWIndex::*)(const Vector&,size_t) const)
+                         &HNSWIndex::search, py::arg("query"), py::arg("k"))
+          .def("search", (SearchResult (HNSWIndex::*)(const Vector&,size_t,size_t) const)
+                         &HNSWIndex::search,
+               py::arg("query"), py::arg("k"), py::arg("efSearch"))
+          .def("search_batch", (std::vector<SearchResult> (HNSWIndex::*)(const Dataset&,size_t) const)
+                              &HNSWIndex::search_batch,
+               py::arg("queries"), py::arg("k"))
+          .def("search_batch", (std::vector<SearchResult> (HNSWIndex::*)(const Dataset&,size_t,size_t) const)
+                              &HNSWIndex::search_batch,
+               py::arg("queries"), py::arg("k"), py::arg("efSearch"))
+          .def("set_ef_search", &HNSWIndex::set_ef_search, py::arg("efSearch"))
+          .def("reorder_layout", (void (HNSWIndex::*)()) &HNSWIndex::reorder_layout)
+          .def("reorder_layout", (void (HNSWIndex::*)(const std::string&))
+               &HNSWIndex::reorder_layout, py::arg("mapping_file"))
+          .def("write_index", &HNSWIndex::write_index, py::arg("filename"))
+          .def_static("read_index", &HNSWIndex::read_index, py::arg("filename"))
+          .def_static("compute_recall_with_mapping",
+               &HNSWIndex::compute_recall_with_mapping,
+               py::arg("groundtruth"), py::arg("predicted_flat"),
+               py::arg("nq"), py::arg("k"), py::arg("mapping_file"))
+          ;
 }
