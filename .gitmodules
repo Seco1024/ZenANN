@@ -1,4 +1,4 @@
 [submodule "extern/faiss"]
 	path = extern/faiss
-	url = git@github.com:Seco1024/faiss.git
+	url = url = https://github.com/Seco1024/faiss.git
 	branch = bfs
