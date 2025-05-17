@@ -95,12 +95,28 @@ SearchResult IVFFlatIndex::search(const Vector& query, size_t k) const {
     return result;
 }
 
+SearchResult IVFFlatIndex::search(const Vector& query, size_t k, size_t nprobe) const {
+    size_t old = this->nprobe_;
+    const_cast<IVFFlatIndex*>(this)->nprobe_ = nprobe;      
+    SearchResult res = this->search(query, k);    
+    const_cast<IVFFlatIndex*>(this)->nprobe_ = old;    
+    return res;
+}
+
 std::vector<SearchResult> IVFFlatIndex::search_batch(const Dataset& queries, size_t k) const {
     std::vector<SearchResult> results;
     results.reserve(queries.size());
     for (const auto& q : queries) {
         results.emplace_back(search(q, k));
     }
+    return results;
+}
+
+std::vector<SearchResult> IVFFlatIndex::search_batch(const Dataset& queries, size_t k, size_t nprobe) const {
+    size_t old = this->nprobe_;
+    const_cast<IVFFlatIndex*>(this)->nprobe_ = nprobe;
+    auto results = this->search_batch(queries, k);  
+    const_cast<IVFFlatIndex*>(this)->nprobe_ = old;
     return results;
 }
 

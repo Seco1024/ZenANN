@@ -11,7 +11,9 @@ public:
     ~IVFFlatIndex() override;
     void train() override;
     SearchResult search(const Vector& query, size_t k) const override;
+    SearchResult search(const Vector& query, size_t k, size_t nprobe) const;
     std::vector<SearchResult> search_batch(const Dataset& queries, size_t k) const;
+    std::vector<SearchResult> search_batch(const Dataset& queries, size_t k, size_t nprobe) const;
     void write_index(const std::string& filename) const;
     static std::shared_ptr<IVFFlatIndex> read_index(const std::string& filename);
 private:

@@ -37,21 +37,33 @@ PYBIND11_MODULE(zenann, m) {
 
     // Bind IVFFlatIndex
     py::class_<IVFFlatIndex, IndexBase, std::shared_ptr<IVFFlatIndex>>(m, "IVFFlatIndex")
-        .def(py::init<size_t, size_t, size_t>(),
-             py::arg("dim"), py::arg("nlist"), py::arg("nprobe") = 1)
-        .def("build", &IVFFlatIndex::build, py::arg("data"),
-             "Add data and train the IVF index")
-        .def("train", &IVFFlatIndex::train,
-             "Train the IVF index (run K-means and build inverted lists)")
-        .def("search", &IVFFlatIndex::search, py::arg("query"), py::arg("k"),
-             "Search top-k nearest neighbors")
-        .def("search_batch", &IVFFlatIndex::search_batch, py::arg("queries"), py::arg("k"),
-             "Search top-k for a batch of queries")
-        // Persistence API
-        .def("write_index", &IVFFlatIndex::write_index, py::arg("filename"),
-             "Serialize the index to a file")
-        .def_static("read_index", &IVFFlatIndex::read_index, py::arg("filename"),
-             "Load an index from a file");
+    .def(py::init<size_t, size_t, size_t>(),
+         py::arg("dim"), py::arg("nlist"), py::arg("nprobe") = 1)
+    .def("build", &IVFFlatIndex::build, py::arg("data"))
+    .def("train", &IVFFlatIndex::train)
+    .def("search",
+         py::overload_cast<const Vector&, size_t>(
+             &IVFFlatIndex::search,
+             py::const_),
+         py::arg("query"), py::arg("k"))
+    .def("search",
+         py::overload_cast<const Vector&, size_t, size_t>(
+             &IVFFlatIndex::search,
+             py::const_),
+         py::arg("query"), py::arg("k"), py::arg("nprobe"))
+    .def("search_batch",
+         py::overload_cast<const Dataset&, size_t>(
+             &IVFFlatIndex::search_batch,
+             py::const_),
+         py::arg("queries"), py::arg("k"))
+    .def("search_batch",
+         py::overload_cast<const Dataset&, size_t, size_t>(
+             &IVFFlatIndex::search_batch,
+             py::const_),
+         py::arg("queries"), py::arg("k"), py::arg("nprobe"))
+
+    .def("write_index", &IVFFlatIndex::write_index, py::arg("filename"))
+    .def_static("read_index", &IVFFlatIndex::read_index, py::arg("filename"));
 
     py::class_<KDTreeIndex, IndexBase, std::shared_ptr<KDTreeIndex>>(m, "KDTreeIndex")
         .def(py::init<size_t>(), py::arg("dim"))
