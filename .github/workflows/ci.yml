@@ -30,13 +30,20 @@ jobs:
         sudo apt-get install -y g++ python3-dev
         pip install pybind11 pytest
 
-    - name: Build faiss (as submodule)
+    - name: Build Faiss (CPU-only)
+      working-directory: extern/faiss
       run: |
-        mkdir -p extern/faiss/build
-        cd extern/faiss/build
-        cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON DCMAKE_POSITION_INDEPENDENT_CODE=ON DCMAKE_INSTALL_PREFIX="$(pwd)/install" DFAISS_ENABLE_PYTHON=OFF -DFAISS_ENABLE_TESTING=OFF DFAISS_ENABLE_GPU=OFF DFAISS_ENABLE_CUDA=OFF 
-        make -j$(nproc)
-        make install
+        cmake -B build -G Ninja \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DBUILD_SHARED_LIBS=ON \
+          -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+          -DCMAKE_INSTALL_PREFIX="${PWD}/build/install" \
+          -DFAISS_ENABLE_PYTHON=OFF \
+          -DFAISS_ENABLE_TESTING=OFF \
+          -DFAISS_ENABLE_GPU=OFF \
+          -DFAISS_ENABLE_CUDA=OFF
+        cmake --build build -j"$(nproc)"
+        cmake --install build
 
     - name: Build pybind11 module
       run: make
