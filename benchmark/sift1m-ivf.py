@@ -75,7 +75,7 @@ def main(args):
     print("Running batch search...")
     K = args.k
     t0 = time.time()
-    all_results = index.search_batch(queries.tolist(), K)
+    all_results = index.search_batch(queries.tolist(), K, args.nprobe)
     t_search = time.time() - t0
     qps = len(queries) / t_search
 
