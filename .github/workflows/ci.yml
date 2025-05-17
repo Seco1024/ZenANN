@@ -14,21 +14,23 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
       with:
-        submodules: recursive 
-    
-    - name: Init submodules
-      run: git submodule update --init --recursive
+        submodules: recursive
+
+    - name: Install toolchain & deps
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+            g++ \
+            ninja-build \
+            libopenblas-dev \
+            libomp-dev \
+            python3-dev
+        pip install pybind11 pytest
 
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.12'
-
-    - name: Install build tools
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y g++ python3-dev
-        pip install pybind11 pytest
 
     - name: Build Faiss (CPU-only)
       working-directory: extern/faiss
@@ -41,13 +43,18 @@ jobs:
           -DFAISS_ENABLE_PYTHON=OFF \
           -DFAISS_ENABLE_TESTING=OFF \
           -DFAISS_ENABLE_GPU=OFF \
-          -DFAISS_ENABLE_CUDA=OFF
+          -DFAISS_ENABLE_CUDA=OFF \
+          -DBLAS_LIBRARIES=openblas                 
         cmake --build build -j"$(nproc)"
         cmake --install build
 
-    - name: Build pybind11 module
-      run: make
-
-    - name: Run tests
+    - name: Build ZenANN module
+      env:
+        FAISS_INC: extern/faiss/build/install/include
+        FAISS_LIB: extern/faiss/build/install/lib     
+      run: |
+        make
+        
+    - name: Run unit-tests
       run: |
         pytest tests/
