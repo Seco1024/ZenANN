@@ -57,5 +57,7 @@ jobs:
         make
 
     - name: Run unit-tests
+      env:
+        LD_LIBRARY_PATH: ${{ github.workspace }}/extern/faiss/build/install/lib
       run: |
         pytest tests/
