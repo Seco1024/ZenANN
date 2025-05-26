@@ -1,5 +1,5 @@
 CXX := g++
-CXXFLAGS := -std=c++17 -O3 -fPIC -march=native
+CXXFLAGS := -std=c++17 -O3 -fPIC -march=native -fopenmp
 
 # Python / pybind11 include flags
 PYBIND11_INCLUDES := $(shell python3 -m pybind11 --includes)
@@ -39,6 +39,8 @@ else
     # on Linux embed rpath to pick up our extern/faiss libfaiss.so
     LDFLAGS := -Wl,-rpath,$$ORIGIN/../extern/faiss/build/install/lib
 endif
+
+LDFLAGS  += -fopenmp
 
 .PHONY: all clean prepare
 
