@@ -93,10 +93,10 @@ def main(args):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser("ZenANN IVF SIFT1M benchmark")
-    parser.add_argument("--base", required=True, help="Path to sift1M_base.fvecs")
-    parser.add_argument("--query", required=True, help="Path to sift1M_query.fvecs")
-    parser.add_argument("--groundtruth", required=True, help="Path to sift1M_groundtruth.ivecs")
+    parser = argparse.ArgumentParser("ZenANN IVF benchmark")
+    parser.add_argument("--base", required=True, help="Path to base.fvecs")
+    parser.add_argument("--query", required=True, help="Path to query.fvecs")
+    parser.add_argument("--groundtruth", required=True, help="Path to groundtruth.ivecs")
     parser.add_argument("--index_file", default=None, help="If provided and exists, load index; otherwise write index here")
     parser.add_argument("--nlist", type=int, default=1024, help="Number of IVF clusters")
     parser.add_argument("--nprobe", type=int, default=4, help="Number of clusters to probe")
