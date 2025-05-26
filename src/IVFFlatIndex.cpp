@@ -1,4 +1,6 @@
 #include "IVFFlatIndex.h"
+#include "SimdUtils.h"
+#include <omp.h>
 #include <limits>
 #include <random>
 #include <algorithm>
@@ -42,82 +44,101 @@ void IVFFlatIndex::train() {
 }
 
 SearchResult IVFFlatIndex::search(const Vector& query, size_t k) const {
-    SearchResult result;
-
-    // Calculate query <-> centroids 
-    std::vector<std::pair<float, size_t>> cdist;
-    cdist.reserve(nlist_);
-    for (size_t c = 0; c < nlist_; ++c) {
-        float d = 0.0f;
-        for (size_t i = 0; i < dimension_; ++i) {
-            float diff = query[i] - centroids_[c][i];
-            d += diff * diff;
-        }
-        cdist.emplace_back(d, c);
-    }
-    // Sorting
-    std::sort(cdist.begin(), cdist.end(), [](auto& a, auto& b){ return a.first < b.first; });
-
-    // Top-k brute-force search
     using Pair = std::pair<float, size_t>;
+    std::vector<Pair> cdist(nlist_);
     std::vector<Pair> heap;
-    heap.reserve(k);
 
+    // calculate distance from centroids
+#pragma omp parallel for schedule(static)
+    for (size_t c = 0; c < nlist_; ++c) {
+        float d = l2_simd(query.data(), centroids_[c].data(), dimension_);
+        cdist[c] = {d, c};
+    }
+    std::partial_sort(cdist.begin(), cdist.begin() + nprobe_, cdist.end(), 
+        [](auto& a, auto& b) { 
+            return a.first < b.first; 
+        }
+    );
+
+    // probe nprobe lists
+    heap.reserve(k);
     const auto& data = datastore_->getAll();
-    for (size_t i = 0; i < nprobe_; ++i) {
-        size_t c = cdist[i].second;
-        for (auto id : lists_[c]) {
-            const auto& v = data[id];
-            float dist = 0.0f;
-            for (size_t j = 0; j < dimension_; ++j) {
-                float diff = query[j] - v[j];
-                dist += diff * diff;
+
+#pragma omp parallel for schedule(dynamic)
+    for (size_t pi = 0; pi < nprobe_; ++pi) {
+        size_t c = cdist[pi].second;
+        std::vector<Pair> local;
+        local.reserve(k);
+
+        for (size_t id : lists_[c]) {
+            float dist = l2_simd(query.data(), data[id].data(), dimension_);
+
+            if (local.size() < k) {
+                local.emplace_back(dist, id);
+                if (local.size() == k)
+                    std::make_heap(local.begin(), local.end());
+            } else if (dist < local.front().first) {
+                std::pop_heap(local.begin(), local.end());
+                local.back() = {dist, id};
+                std::push_heap(local.begin(), local.end());
             }
-            if (heap.size() < k) {
-                heap.emplace_back(dist, id);
-                if (heap.size() == k) std::make_heap(heap.begin(), heap.end());
-            } else if (dist < heap.front().first) {
-                std::pop_heap(heap.begin(), heap.end());
-                heap.back() = {dist, id};
-                std::push_heap(heap.begin(), heap.end());
+        }
+
+#pragma omp critical
+{
+            for (auto& p : local) {
+                if (heap.size() < k) {
+                    heap.emplace_back(p);
+                    if (heap.size() == k)
+                        std::make_heap(heap.begin(), heap.end());
+                } else if (p.first < heap.front().first) {
+                    std::pop_heap(heap.begin(), heap.end());
+                    heap.back() = p;
+                    std::push_heap(heap.begin(), heap.end());
+                }
             }
         }
     }
 
-    std::sort(heap.begin(), heap.end(), [](const Pair &a, const Pair &b){ return a.first < b.first; });
+    std::sort(heap.begin(), heap.end(),
+              [](const Pair& a, const Pair& b) { return a.first < b.first; });
 
-    result.distances.resize(heap.size());
-    result.indices.resize(heap.size());
+    SearchResult res;
+    res.distances.resize(heap.size());
+    res.indices.resize(heap.size());
     for (size_t i = 0; i < heap.size(); ++i) {
-        result.distances[i] = heap[i].first;
-        result.indices[i] = heap[i].second;
+        res.distances[i] = heap[i].first;
+        res.indices[i]   = heap[i].second;
     }
-    return result;
+    return res;
 }
 
 SearchResult IVFFlatIndex::search(const Vector& query, size_t k, size_t nprobe) const {
-    size_t old = this->nprobe_;
-    const_cast<IVFFlatIndex*>(this)->nprobe_ = nprobe;      
-    SearchResult res = this->search(query, k);    
-    const_cast<IVFFlatIndex*>(this)->nprobe_ = old;    
+    size_t old = nprobe_;
+    const_cast<IVFFlatIndex*>(this)->nprobe_ = nprobe;
+    SearchResult res = search(query, k);
+    const_cast<IVFFlatIndex*>(this)->nprobe_ = old;
     return res;
 }
 
 std::vector<SearchResult> IVFFlatIndex::search_batch(const Dataset& queries, size_t k) const {
-    std::vector<SearchResult> results;
-    results.reserve(queries.size());
-    for (const auto& q : queries) {
-        results.emplace_back(search(q, k));
+    const size_t nq = queries.size();
+    std::vector<SearchResult> results(nq);
+
+#pragma omp parallel for schedule(dynamic)
+    for (size_t i = 0; i < nq; ++i) {
+        results[i] = search(queries[i], k);
     }
-    return results;
+
+    return results;            
 }
 
 std::vector<SearchResult> IVFFlatIndex::search_batch(const Dataset& queries, size_t k, size_t nprobe) const {
-    size_t old = this->nprobe_;
+    size_t old = nprobe_;
     const_cast<IVFFlatIndex*>(this)->nprobe_ = nprobe;
-    auto results = this->search_batch(queries, k);  
+    auto res = search_batch(queries, k);
     const_cast<IVFFlatIndex*>(this)->nprobe_ = old;
-    return results;
+    return res;
 }
 
 void IVFFlatIndex::kmeans(const Dataset& data, size_t iterations) {
