@@ -14,6 +14,14 @@ struct PyIndexBase : IndexBase {
     using IndexBase::IndexBase;
     void train() override { }
     SearchResult search(const Vector&, size_t) const override { return {}; }
+    void write_index(const std::string& filename) const override {
+        PYBIND11_OVERRIDE_PURE(
+            void,     
+            IndexBase,   
+            write_index,  
+            filename    
+        );
+    }
 };
 
 PYBIND11_MODULE(zenann, m) {
@@ -33,6 +41,8 @@ PYBIND11_MODULE(zenann, m) {
              "Train the index (abstract stub)")
         .def("search", &IndexBase::search, py::arg("query"), py::arg("k"),
              "Search k nearest neighbors")
+        .def("write_index", &IndexBase::write_index, py::arg("filename"),
+             "Write index to file")
         .def_property_readonly("dimension", &IndexBase::dimension,
              "Dimension of vectors");
 

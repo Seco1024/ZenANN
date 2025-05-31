@@ -23,6 +23,7 @@ public:
     virtual void build(const Dataset& data);
     virtual void train() = 0;
     virtual SearchResult search(const Vector& query, size_t k) const = 0;
+    virtual void write_index(const std::string& filename) const = 0;
 
     size_t dimension() const noexcept {
         return dimension_;
