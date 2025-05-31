@@ -25,43 +25,38 @@ ZenANN will be implemented in C++ for high performance and exposes an intuitive 
 ### Index Hierarchy
 There will be an abstract base index, which provides a unified interface for different index classes.
 1. **Base Index Class**
-    - `indexBase`: Defines the common API for all indexing methods (eg. `add()`, `search()`, `train()`, `reorder_layout()`)
-
-2. **Derived Index Classes**
-    - `indexHNSW`: A graph-based structure for accurate and efficient ANN
-    - `indexIVF`: A cluster-based structure for large dataset
-3. **Hybrid Index Classes** 
-    - `indexIVF_HNSW` / `indexHNSW_IVF` : For fast-coveraging larger datasets
-4. (Optional) **Quantization Index Classes**
-    - `indexPQ`: Combined with product quantization for memory-limited scenarios
+    - `indexBase`: Defines the common API for all indexing methods (eg. `add()`, `search()`, `train()`)
+2. **KD-tree Index Class**
+    - `KDTreeIndex`: To serve as a baseline for approximate search algorithms, KD-tree is used to perform exact search.
+3. **IVF Index Class**
+    - `IVFIndex`: A cluster-based structure for large dataset
+4. **HNSW Index Class**
+    - `HNSWIndex`: A graph-based structure for accurate and efficient ANN
 
 Note: Actual implementation detail of HNSW may be built on Faiss's interface according to development progress
 
 ### Processing Flow
 1. Initialize an index (e.g., `indexBase`, `indexHNSW`)
-2. Build an index
-2-1. Add the given vector data using `add()` to a specific index instance.
-2-2. Train index with  `train()` if needed
-2-3. Optimize the index data layout with `reorder_layout()` to improve cache locality.
+2. Build an index with `add()` 
+- Add the given vector data to a specific index instance.
+- Train index with  `train()` if needed(for IVF-based Index)
+- Optimize the index data layout with reorder_layout in Faiss submodule to improve cache locality.
 4. Perform a query on the specified index instance using `search()`.
-5. Evaluate accuracy using the `get_statistics()` API.
+5. Return result set with top-k id & estimated distance for each query.
 
 ## API Description
 There is a simple python examples for understanding the API design
 ```
 import zenann
 
-# Initialize an HNSW index
-index = zenann.HNSWIndex(dimension=128, ef_construction=200, M=16)
+# Initialize an index for ANN search
+index = zenann.HNSWIndex(dim=128, M=16, efConstruction=200)
 
-# Add vectors to the index and conduct reordering
+# Add vectors to the index and conduct training / reordering
 index.add(data_vectors)
-index.train()
-index.reorder_layout()
 
 # Perform a search
 results = index.search(query_vector, k=5, efSearch=100)
-recall = get_statistics(results, ground_truth)
 ```
 
 ## Engineering Infrastructure
@@ -71,10 +66,10 @@ recall = get_statistics(results, ground_truth)
 - Git
 - Github
 ### Testing Framework
-- C++: Google Test
 - Python: pytest
 ### Documentation
 - Markdown
+- Mermaid
 ### Continuous Integration
 - Github Actions
 
