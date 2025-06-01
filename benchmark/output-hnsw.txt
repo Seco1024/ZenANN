@@ -1,0 +1,142 @@
+===========================
+SIFT1M with bfs reordering layout
+===========================
+ef=5
+Recall@10: 63.48%
+QPS: 107099.19
+
+        72,456,130      cpu_atom/cache-references/                                              (28.88%)
+       257,642,446      cpu_core/cache-references/                                              (96.06%)
+        51,136,930      cpu_atom/cache-misses/           #   70.58% of all cache refs           (28.88%)
+       162,353,239      cpu_core/cache-misses/           #   63.01% of all cache refs           (96.06%)
+
+
+ef=10
+Recall@10: 78.12%
+QPS: 87416.48
+    43,990,542,271      cpu_atom/cache-references/                                              (60.48%)
+    72,673,498,731      cpu_core/cache-references/                                              (50.35%)
+    28,491,947,858      cpu_atom/cache-misses/           #   64.77% of all cache refs           (60.48%)
+    50,017,465,027      cpu_core/cache-misses/           #   68.82% of all cache refs           (50.35%)
+
+
+ef=15
+Recall@10: 85.15%
+QPS: 76220.99
+        94,076,128      cpu_atom/cache-references/                                              (42.12%)
+       316,270,961      cpu_core/cache-references/                                              (85.82%)
+        70,922,557      cpu_atom/cache-misses/           #   75.39% of all cache refs           (42.12%)
+       203,265,077      cpu_core/cache-misses/           #   64.27% of all cache refs           (85.82%)
+
+ef=20
+Recall@10: 89.22%
+QPS: 68067.47
+
+       103,835,126      cpu_atom/cache-references/                                              (45.91%)
+       331,918,134      cpu_core/cache-references/                                              (95.90%)
+        79,645,002      cpu_atom/cache-misses/           #   76.70% of all cache refs           (45.91%)
+       210,726,175      cpu_core/cache-misses/           #   63.49% of all cache refs           (95.90%)
+
+ef=25
+Recall@10: 91.81%
+QPS: 60561.62
+       108,881,339      cpu_atom/cache-references/                                              (49.66%)
+       317,715,766      cpu_core/cache-references/                                              (89.59%)
+        83,836,221      cpu_atom/cache-misses/           #   77.00% of all cache refs           (49.66%)
+       207,854,260      cpu_core/cache-misses/           #   65.42% of all cache refs           (89.59%)
+
+ef=30
+Recall@10: 93.65%
+QPS: 55947.25
+       109,354,491      cpu_atom/cache-references/                                              (53.84%)
+       364,919,465      cpu_core/cache-references/                                              (92.84%)
+        84,331,045      cpu_atom/cache-misses/           #   77.12% of all cache refs           (53.84%)
+       236,443,486      cpu_core/cache-misses/           #   64.79% of all cache refs           (92.84%)
+
+ef=40
+Recall@10: 95.87%
+QPS: 47099.12
+       121,887,867      cpu_atom/cache-references/                                              (58.92%)
+       315,820,449      cpu_core/cache-references/                                              (99.70%)
+        94,953,507      cpu_atom/cache-misses/           #   77.90% of all cache refs           (58.92%)
+       211,389,934      cpu_core/cache-misses/           #   66.93% of all cache refs           (99.70%)
+
+ef=60
+Recall@10: 97.93%
+QPS: 37587.18
+       159,736,334      cpu_atom/cache-references/                                              (61.20%)
+       426,603,264      cpu_core/cache-references/                                              (91.55%)
+       125,549,640      cpu_atom/cache-misses/           #   78.60% of all cache refs           (61.20%)
+       287,233,777      cpu_core/cache-misses/           #   67.33% of all cache refs           (91.55%)
+
+=================
+SIFT1M without bfs reordering layout
+=================
+ef=5
+Recall@10: 63.48%
+QPS: 99328.01
+
+        47,502,621      cpu_atom/cache-references/                                              (46.25%)
+       142,958,045      cpu_core/cache-references/                                              (93.32%)
+        33,331,320      cpu_atom/cache-misses/           #   70.17% of all cache refs           (46.25%)
+       101,844,508      cpu_core/cache-misses/           #   71.24% of all cache refs           (93.32%)
+
+ef=10
+Recall@10: 78.13%
+QPS: 83106.38
+
+        55,790,351      cpu_atom/cache-references/                                              (57.00%)
+       164,230,016      cpu_core/cache-references/                                              (88.66%)
+        40,719,605      cpu_atom/cache-misses/           #   72.99% of all cache refs           (57.00%)
+       117,564,601      cpu_core/cache-misses/           #   71.59% of all cache refs           (88.66%)
+
+ef=15
+Recall@10: 85.16%
+QPS: 72297.01
+        68,552,929      cpu_atom/cache-references/                                              (57.59%)
+       169,966,261      cpu_core/cache-references/                                              (91.83%)
+        51,247,384      cpu_atom/cache-misses/           #   74.76% of all cache refs           (57.59%)
+       123,684,488      cpu_core/cache-misses/           #   72.77% of all cache refs   
+       
+        (91.83%)
+
+ef=20
+Recall@10: 89.22%
+QPS: 64398.86
+        69,222,991      cpu_atom/cache-references/                                              (68.03%)
+       167,599,970      cpu_core/cache-references/                                              (99.91%)
+        52,530,677      cpu_atom/cache-misses/           #   75.89% of all cache refs           (68.03%)
+       122,278,777      cpu_core/cache-misses/           #   72.96% of all cache refs  
+
+ef=25
+Recall@10: 91.82%
+QPS: 57968.81
+        83,911,560      cpu_atom/cache-references/                                              (65.49%)
+       185,645,118      cpu_core/cache-references/                                              (95.08%)
+        64,037,572      cpu_atom/cache-misses/           #   76.32% of all cache refs           (65.49%)
+       135,020,154      cpu_core/cache-misses/           #   72.73% of all cache refs           (95.08%)
+
+ef=30
+Recall@10: 93.66%
+QPS: 53007.58
+       100,232,820      cpu_atom/cache-references/                                              (64.83%)
+       228,147,504      cpu_core/cache-references/                                              (81.26%)
+        76,970,139      cpu_atom/cache-misses/           #   76.79% of all cache refs           (64.83%)
+       167,235,706      cpu_core/cache-misses/           #   73.30% of all cache refs           (81.26%)
+
+ef=40
+Recall@10: 95.88%
+QPS: 44190.85
+       122,347,383      cpu_atom/cache-references/                                              (69.37%)
+       269,913,525      cpu_core/cache-references/                                              (73.92%)
+        94,873,994      cpu_atom/cache-misses/           #   77.54% of all cache refs           (69.37%)
+       198,870,673      cpu_core/cache-misses/           #   73.68% of all cache refs           (73.92%)
+
+ef=60
+Recall@10: 97.94%
+QPS: 34697.74
+
+       145,068,524      cpu_atom/cache-references/                                              (73.33%)
+       255,130,990      cpu_core/cache-references/                                              (94.40%)
+       113,095,172      cpu_atom/cache-misses/           #   77.96% of all cache refs           (73.33%)
+       193,293,118      cpu_core/cache-misses/           #   75.76% of all cache refs           (94.40%)

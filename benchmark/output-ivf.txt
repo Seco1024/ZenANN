@@ -1,0 +1,98 @@
+===========================
+IVF (SIFT1M)
+===========================
+Recall@10: 37.61%
+Search QPS: 2319.06 queries/sec
+
+Recall@10: 63.88%
+Search QPS: 940.81 queries/sec
+
+Recall@10: 75.38%
+Search QPS: 590.90 queries/sec
+
+Recall@10: 84.18%
+Search QPS: 382.29 queries/sec
+
+Recall@10: 87.74%
+Search QPS: 310.28 queries/sec
+
+Recall@10: 92.58%
+Search QPS: 210.34 queries/sec
+
+Recall@10: 95.86%
+Search QPS: 144.29 queries/sec
+
+Recall@10: 97.89%
+Search QPS: 92.47 queries/sec
+
+===========================
+IVF (GIST1M)
+===========================
+Recall@10: 22.48%
+Search QPS: 437.88 queries/sec
+
+Recall@10: 54.77%
+Search QPS: 121.17 queries/sec
+
+Recall@10: 69.82%
+Search QPS: 63.66 queries/sec
+
+Recall@10: 78.16%
+Search QPS: 43.88 queries/sec
+
+Recall@10: 86.89%
+Search QPS: 26.93 queries/sec
+
+Recall@10: 90.18%
+Search QPS: 21.31 queries/sec
+
+===========================
+IVF (SIFT1M) - OpenMP + SIMD
+===========================
+Recall@10: 37.61%
+Search QPS: 51545.00 queries/sec
+
+Recall@10: 63.88%
+Search QPS: 21174.76 queries/sec
+
+Recall@10: 75.38%
+Search QPS: 13158.48 queries/sec
+
+Recall@10: 81.89%
+Search QPS: 9608.42 queries/sec
+
+Recall@10: 87.75%
+Search QPS: 6925.16 queries/sec
+
+Recall@10: 91.90%
+Search QPS: 4985.22 queries/sec
+
+Recall@10: 94.31%
+Search QPS: 3914.07 queries/sec
+
+Recall@10: 96.43%
+Search QPS: 2952.31 queries/sec
+
+===========================
+IVF (GIST1M) - OpenMP + SIMD
+===========================
+Recall@10: 22.48%
+Search QPS: 7296.14 queries/sec
+
+Recall@10: 54.77%
+Search QPS: 1764.15 queries/sec
+
+Recall@10: 69.82%
+Search QPS: 906.25 queries/sec
+
+Recall@10: 78.16%
+Search QPS: 610.81 queries/sec
+
+Recall@10: 83.20%
+Search QPS: 459.61 queries/sec
+
+Recall@10: 86.89%
+Search QPS: 369.80 queries/sec
+
+Recall@10: 89.49%
+Search QPS: 310.56 queries/sec
