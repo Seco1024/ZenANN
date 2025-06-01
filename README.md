@@ -1,5 +1,10 @@
 # ZenANN: A High-Performance Vector Similarity Search Library for Python Users
 
+![Repo Size](https://img.shields.io/github/repo-size/seco1024/zenann)
+[![PyPI Version](https://img.shields.io/pypi/v/zenann.svg)](https://pypi.org/project/zenann/)
+[![CodeFactor](https://www.codefactor.io/repository/github/seco1024/zenann/badge)](https://www.codefactor.io/repository/github/seco1024/zenann)
+[![License](https://img.shields.io/github/license/seco1024/zenann)](https://github.com/seco1024/zenann/blob/main/LICENSE)
+
 ## Basic Information
 
 **ZenANN** is a high-performance approximate nearest neighbor (ANN) similarity search library designed to be user-friendly for Python developers. It provides multiple indexing methods, such as **IVF** (Inverted File Index), **HNSW** (Hierarchical Navigable Small World), and **hybrid-index structures** to balance between accuracy and speed. The computation kernel of ZenANN will be optimized for cache efficiency, SIMD acceleration, and algorithms enhancements beyond existing in-memory libraries.
