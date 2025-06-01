@@ -1,0 +1,36 @@
+[build-system]
+requires = [
+    "setuptools>=61.0",
+    "wheel"
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zenann"               
+version = "0.1.0"
+description = "ZenANN: High-performance ANN search with a prebuilt C++ .so module"
+readme = "README.md"
+
+authors = [
+    { name = "Seco1024", email = "deyenqiu@gmail.com" }
+]
+requires-python = ">=3.10"
+
+dependencies = [
+    "numpy>=1.20",
+    "pybind11>=2.10"
+]
+
+[project.urls]
+"Homepage"   = "https://github.com/Seco1024/zenann"
+"Repository" = "https://github.com/Seco1024/zenann.git"
+
+[tool.setuptools]
+packages = ["zenann"]
+
+[tool.setuptools.package-data]
+"zenann" = [
+    "*.so",     
+    "*.pyd",  
+    "py.typed"   
+]
